@@ -58,6 +58,20 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.post('/api/persons', (request, response) => {  
+  const body = request.body
+
+  if (!body.name || !body.number) {
+    return response.status(400).json({ 
+      error: 'Content missing - please supply a name and a number' 
+    })
+  }
+
+  if (persons.some(person => person.name.toUpperCase() === body.name.toUpperCase())) {
+    return response.status(400).json({ 
+      error: `A person with name ${body.name} is already added to the phonebook. Please supply a unique name.` 
+    })
+  }
+
   const randomId = Math.floor(Math.random() * (1000 - 5) + 5)
   
   const person = request.body  
