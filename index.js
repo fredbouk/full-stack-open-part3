@@ -1,9 +1,12 @@
 const express = require('express')
+const cors = require('cors')
 const morgan = require('morgan')
 
 const app = express()
 
 // middleware
+app.use(cors())
+
 app.use(express.json())
 
 morgan.token('newPerson', (req) => JSON.stringify(req.body))
