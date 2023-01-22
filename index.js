@@ -1,30 +1,12 @@
+require('dotenv').config()
+
 const express = require('express')
+const app = express()
+
+const Person = require('./models/person')
+
 const cors = require('cors')
 const morgan = require('morgan')
-
-//mongoDB
-const mongoose = require('mongoose')
-
-const url = `mongodb+srv://fullstack:xxxxxx@cluster0.3d2dnz1.mongodb.net/phonebook?retryWrites=true&w=majority`
-mongoose.connect(url)
-
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String
-})
-
-const Person = mongoose.model('Person', personSchema)
-
-personSchema.set('toJSON', {
-  transform: (document, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString()
-    delete returnedObject._id
-    delete returnedObject.__v
-  }
-})
-//
-
-const app = express()
 
 // middleware
 app.use(cors())
@@ -79,20 +61,14 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  if (persons.some(person => person.name.toUpperCase() === body.name.toUpperCase())) {
-    return response.status(400).json({ 
-      error: `A person with name ${body.name} is already added to the phonebook. Please supply a unique name.` 
-    })
-  }
+  const person = new Person({
+    name: body.name,
+    number: body.number
+  })
 
-  const randomId = Math.floor(Math.random() * (1000 - 5) + 5)
-  
-  const person = request.body  
-  person.id = randomId
-
-  persons = persons.concat(person) 
-
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 const PORT = process.env.PORT || 3001
