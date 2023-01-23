@@ -16,6 +16,7 @@ app.use(cors())
 morgan.token('newPerson', (req) => JSON.stringify(req.body))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :newPerson'))
 
+// routes
 app.get('/info', (request, response) => {
   const numPersons = persons.length
   const date = new Date()
@@ -68,6 +69,28 @@ app.post('/api/persons', (request, response) => {
     response.json(savedPerson)
   })
 })
+
+
+// handler of requests with unknown endpoint
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+app.use(errorHandler)
+
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
