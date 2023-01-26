@@ -1,6 +1,6 @@
-# fly.toml file generated for phnbk-backend on 2023-01-15T12:13:07+01:00
+# fly.toml file generated for phnbook on 2023-01-26T15:05:02+01:00
 
-app = "phnbk-backend"
+app = "phnbook"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = []
