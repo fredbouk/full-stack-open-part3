@@ -1,6 +1,8 @@
 //mongoDB
 const mongoose = require('mongoose')
 
+const uniqueValidator = require('mongoose-unique-validator')
+
 mongoose.set('strictQuery', false)
 
 const url = process.env.MONGODB_URI
@@ -19,10 +21,21 @@ const personSchema = new mongoose.Schema({
   name: {
     type: String,    
     minLength: 3,    
-    required: true
+    required: true,
+    unique: true
   },
-  number: String
+  number: {
+    type: String,
+    // custom mongoose validator to check if number is in correct format
+    validate: {
+      validator: (number) => /^\d{8}$|^\d{2,3}\-\d{8}$/.test(number),
+      message: props => `${props.value} is not a valid phone number format!`
+    },    
+    required: true
+  }
 })
+
+personSchema.plugin(uniqueValidator)
 
 personSchema.set('toJSON', {
   transform: (document, returnedObject) => {
